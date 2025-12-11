@@ -3,203 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hóa đơn thanh toán</title>
+    <title>Bio Link Payment - Hoàng Vinh</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles for 3D & Animations -->
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #000;
+            overflow-x: hidden;
+        }
+
+        /* 3D Flip Utilities */
+        .perspective-2000 {
+            perspective: 2000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Glassmorphism Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        /* Animations Keyframes */
+        @keyframes float-blob-1 {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(45deg); }
+        }
+        @keyframes float-blob-2 {
+            0%, 100% { transform: scale(1) translateX(0); }
+            50% { transform: scale(1.4) translateX(50px); }
+        }
+        @keyframes float-blob-3 {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.2) translateY(-80px); }
+        }
+
+        .animate-blob-1 { animation: float-blob-1 15s infinite linear; }
+        .animate-blob-2 { animation: float-blob-2 12s infinite ease-in-out; }
+        .animate-blob-3 { animation: float-blob-3 10s infinite ease-in-out; }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+        .animate-pulse-ring { animation: pulse-ring 3s infinite; }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stagger-1 { animation: fade-in-up 0.6s ease-out 0.2s forwards; opacity: 0; }
+        .stagger-2 { animation: fade-in-up 0.6s ease-out 0.3s forwards; opacity: 0; }
+        .stagger-3 { animation: fade-in-up 0.6s ease-out 0.4s forwards; opacity: 0; }
+        .stagger-list-item { opacity: 0; animation: fade-in-up 0.5s ease-out forwards; }
+
+        /* Super Glass Effect */
+        .glass-container {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(50px);
+            -webkit-backdrop-filter: blur(50px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 30px 60px -12px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Toast Animation */
+        .toast-enter {
+            animation: toast-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .toast-exit {
+            animation: toast-out 0.4s ease-in forwards;
+        }
+        
+        @keyframes toast-in {
+            0% { opacity: 0; transform: translate(-50%, 50px) scale(0.9); filter: blur(10px); }
+            100% { opacity: 1; transform: translate(-50%, 0) scale(1); filter: blur(0); }
+        }
+        @keyframes toast-out {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(1); filter: blur(0); }
+            100% { opacity: 0; transform: translate(-50%, 20px) scale(0.9); filter: blur(10px); }
+        }
+    </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-4 selection:bg-pink-500/30 text-white">
 
-    <div class="payment-machine">
-        <header class="machine-header">
-            <div class="step-progress">
-                <div class="step-item active" data-step="1">
-                    <div class="step-circle">1</div>
-                    <span>Chọn loại</span>
-                </div>
-                <div class="step-item" data-step="2">
-                    <div class="step-circle">2</div>
-                    <span>Chọn tài khoản</span>
-                </div>
-                <div class="step-item" data-step="3">
-                    <div class="step-circle">3</div>
-                    <span>Hóa đơn</span>
-                </div>
-            </div>
-        </header>
-
-        <main class="machine-body">
-
-            <div class="step active" data-step="1">
-                <h2>BƯỚC 1: CHỌN LOẠI THANH TOÁN</h2>
-                <div class="payment-options" id="payment-options-container">
-                    <div class="option-card active" data-type="Locket Gold" data-amount="30000">
-                        <i class="fa-solid fa-gem"></i>
-                        <span>Locket Gold</span>
-                        <strong>30,000 VND</strong>
-                    </div>
-                    <div class="option-card" data-type="Thanh Toán Tự Do" data-amount="0" data-custom="true">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                        <span>Thanh Toán Tự Do</span>
-                        <strong>Tùy chỉnh</strong>
-                    </div>
-                    <div class="option-card" data-type="Nạp Tiền Điện Tử" data-amount="500000">
-                        <i class="fa-brands fa-bitcoin"></i>
-                        <span>Nạp Tiền Điện Tử</span>
-                        <strong>500,000 VND</strong>
-                    </div>
-                    <div class="option-card" data-type="Giao Dịch Khác" data-amount="0" data-custom="true">
-                        <i class="fa-solid fa-ellipsis"></i>
-                        <span>Giao Dịch Khác</span>
-                        <strong>Tùy chỉnh</strong>
-                    </div>
-                </div>
-                <div class="input-group hidden" id="custom-amount-group">
-                    <label for="custom-amount">Nhập số tiền (VND):</label>
-                    <input type="number" id="custom-amount" placeholder="Ví dụ: 50000">
-                    <div class="error-message" id="step1-error"></div>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-primary" id="step1-next">TIẾP TỤC CHỌN TÀI KHOẢN <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            <div class="step" data-step="2">
-                <h2>BƯỚC 2: CHỌN TÀI KHOẢN NGÂN HÀNG</h2>
-                <div class="account-list" id="account-list-container">
-                    <label class="account-item">
-                        <input type="radio" name="bank-account" value="mb_main" checked>
-                        <div class="account-info">
-                            <i class="fa-solid fa-building-columns account-icon bank-icon"></i>
-                            <div>
-                                <strong>MB BANK - TÀI KHOẢN CHÍNH</strong>
-                                <span>090695 - NGUYEN HOANG VINH</span>
-                            </div>
-                        </div>
-                        <span class="status-badge active">HOẠT ĐỘNG</span>
-                    </label>
-                    <label class="account-item">
-                        <input type="radio" name="bank-account" value="mb_sub">
-                        <div class="account-info">
-                            <i class="fa-solid fa-building-columns account-icon bank-icon"></i>
-                            <div>
-                                <strong>MB BANK - TÀI KHOẢN 2</strong>
-                                <span>596783 - NGUYEN HOANG VINH</span>
-                            </div>
-                        </div>
-                        <span class="status-badge active">HOẠT ĐỘNG</span>
-                    </label>
-                    <label class="account-item">
-                        <input type="radio" name="bank-account" value="zalo">
-                        <div class="account-info">
-                            <i class="fa-solid fa-wallet account-icon wallet-icon-zalo"></i>
-                            <div>
-                                <strong>ZALO PAY</strong>
-                                <span>0397772987 - NGUYEN HOANG VINH</span>
-                            </div>
-                        </div>
-                        <span class="status-badge active">HOẠT ĐỘNG</span>
-                    </label>
-                    <label class="account-item disabled">
-                        <input type="radio" name="bank-account" value="momo" disabled>
-                        <div class="account-info">
-                            <i class="fa-solid fa-wallet account-icon wallet-icon-momo"></i>
-                            <div>
-                                <strong>VÍ MOMO</strong>
-                                <span>0397772987 - NGUYEN HOANG VU DUY</span>
-                            </div>
-                        </div>
-                        <span class="status-badge inactive">DỪNG HĐ</span>
-                    </label>
-                </div>
-                <div class="error-message" id="step2-error"></div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" id="step2-back"><i class="fa-solid fa-arrow-left"></i> QUAY LẠI</button>
-                    <button class="btn btn-primary" id="step2-next">XEM HÓA ĐƠN <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            <div class="step" data-step="3">
-                <h2>BƯỚC 3: HÓA ĐƠN THANH TOÁN</h2>
-                
-                <div class="receipt-paper">
-                    <div class="receipt-header">
-                        <i class="fa-solid fa-receipt"></i>
-                        <strong>BIÊN NHẬN GIAO DỊCH</strong>
-                    </div>
-
-                    <ul class="receipt-details">
-                        <li>
-                            <span>Mã giao dịch:</span>
-                            <strong id="receipt-txn-id">#HV2025001</strong>
-                        </li>
-                        <li>
-                            <span>Thời gian:</span>
-                            <span id="receipt-time">11/11/2025 23:15:00</span>
-                        </li>
-                        <li>
-                            <span>Loại thanh toán:</span>
-                            <span id="receipt-type">Locket Gold</span>
-                        </li>
-                        <li class="total">
-                            <span>SỐ TIỀN:</span>
-                            <strong id="receipt-amount">30,000 VND</strong>
-                        </li>
-                    </ul>
-
-                    <div class="receipt-divider"></div>
-
-                    <div class="receipt-account">
-                        <h4>THÔNG TIN TÀI KHOẢN NHẬN</h4>
-                        <i id="receipt-bank-icon" class="fa-solid fa-building-columns"></i>
-                        
-                        <strong id="receipt-bank-name">MB BANK - TÀI KHOẢN CHÍNH</strong>
-                        <span id="receipt-account-owner">NGUYEN HOANG VINH</span>
-                        <div class="account-number-box">
-                            <strong id="receipt-account-number">090695</strong>
-                            <button id="copy-stk-btn" title="Sao chép số tài khoản"><i class="fa-regular fa-copy"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="receipt-divider"></div>
-                    
-                    <h4>NỘI DUNG CHUYỂN KHOẢN</h4>
-                    <div class="memo-box">
-                        <strong id="receipt-memo">#HV2025001</strong>
-                        <button id="copy-memo-btn" title="Sao chép nội dung"><i class="fa-regular fa-copy"></i></button>
-                    </div>
-
-                    <div class="receipt-qr">
-                        <img id="receipt-qr-img" src="" alt="Mã QR thanh toán">
-                        <div id="qr-not-available" class="hidden">
-                            <i class="fa-solid fa-qrcode"></i>
-                            <p>Mã QR không khả dụng cho tài khoản này.</p>
-                            <p>Vui lòng chuyển khoản thủ công.</p>
-                        </div>
-                        <small>Quét mã để thanh toán tự động</small>
-                    </div>
-                </div>
-
-                <div class="nav-buttons-column">
-                    <button class="btn btn-confirm" id="confirm-payment-btn">
-                        <i class="fa-solid fa-paper-plane"></i> ĐÃ THANH TOÁN
-                    </button>
-                    <button class="btn btn-secondary" id="step3-back"><i class="fa-solid fa-arrow-left"></i> QUAY LẠI</button>
-                </div>
-            </div>
-
-        </main>
-
-        <footer class="machine-footer">
-            <p>Hỗ trợ: <a href="tel:0397772987">0397 772 987</a></p>
-            <p><a href="mailto:honagvinh09062008@gmail.com">honagvinh09062008@gmail.com</a></p>
-        </footer>
+    <!-- Background Layers -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none bg-[#050505] z-0">
+        <div class="absolute -top-[10%] left-[20%] w-[600px] h-[600px] bg-indigo-600/40 rounded-full blur-[120px] mix-blend-screen animate-blob-1"></div>
+        <div class="absolute top-[30%] -right-[10%] w-[500px] h-[500px] bg-fuchsia-600/30 rounded-full blur-[120px] mix-blend-screen animate-blob-2"></div>
+        <div class="absolute -bottom-[20%] left-[10%] w-[700px] h-[700px] bg-cyan-600/30 rounded-full blur-[120px] mix-blend-screen animate-blob-3"></div>
+        <div class="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-150 contrast-150"></div>
     </div>
 
-    <div id="toast-notification">Đã sao chép!</div>
+    <!-- Main Container 3D Context -->
+    <div class="relative w-full max-w-[380px] h-[720px] perspective-2000 z-10">
+        
+        <!-- Flipper Div -->
+        <div id="card-flipper" class="w-full h-full relative transform-style-3d transition-transform duration-700 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]">
+            
+            <!-- === FRONT FACE === -->
+            <div class="absolute inset-0 w-full h-full backface-hidden">
+                <div class="glass-container w-full h-full rounded-[48px] flex flex-col overflow-hidden relative">
+                    
+                    <!-- Header Section -->
+                    <div class="flex flex-col items-center pt-10 pb-8 relative z-10">
+                        <div class="relative group cursor-pointer">
+                            <div class="absolute -inset-4 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 rounded-full opacity-40 blur-xl animate-pulse-ring"></div>
+                            <div class="relative w-28 h-28 rounded-full p-[3px] bg-gradient-to-b from-white/80 to-white/20 backdrop-blur-sm overflow-hidden shadow-2xl">
+                                <img src="/avatar" alt="Avatar" class="w-full h-full rounded-full object-cover bg-black/20">
+                            </div>
+                        </div>
+                        
+                        <h1 class="mt-6 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/60 drop-shadow-lg stagger-1">
+                            Hoàng Vinh
+                        </h1>
+                        <p class="text-white/60 text-sm mt-2 text-center px-6 font-medium tracking-wide stagger-2">
+                            Cổng Thanh Toán | Uy Tín Nhanh Chóng 
+                        </p>
 
-    <script src="script.js"></script>
+                        <!-- Social Icons -->
+                        <div class="flex gap-3 mt-6 p-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md stagger-3">
+                            <!-- Facebook -->
+                            <a href="#" class="p-2 text-white/60 hover:text-white transition-transform hover:scale-110" title="Facebook">
+                                <i data-lucide="facebook" width="18" height="18"></i>
+                            </a>
+                            
+                            <div class="w-[1px] h-4 bg-white/10 self-center"></div>
+                            
+                            <!-- Phone -->
+                            <a href="tel:0397772987" class="p-2 text-white/60 hover:text-white transition-transform hover:scale-110" title="Call Me">
+                                <i data-lucide="phone" width="18" height="18"></i>
+                            </a>
+                            
+                            <div class="w-[1px] h-4 bg-white/10 self-center"></div>
+                            
+                            <!-- Telegram -->
+                            <a href="#" class="p-2 text-white/60 hover:text-white transition-transform hover:scale-110" title="Telegram">
+                                <i data-lucide="send" width="18" height="18"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Bank List Container -->
+                    <div id="bank-list" class="flex-1 overflow-y-auto px-5 pb-8 space-y-4 custom-scrollbar relative z-10">
+                        <!-- Items will be injected here via JS -->
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="p-5 text-center relative z-10">
+                        <p class="text-[10px] text-white/30 font-medium tracking-[0.2em] uppercase">iOS 26 Concept Design</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === BACK FACE === -->
+            <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180">
+                <div class="glass-container w-full h-full rounded-[48px] flex flex-col justify-center relative overflow-hidden">
+                    
+                    <!-- Decorative Gradients Back -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 blur-[80px] rounded-full pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/20 blur-[80px] rounded-full pointer-events-none"></div>
+
+                    <!-- Back Button -->
+                    <button onclick="flipBack()" class="absolute top-8 left-8 p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 backdrop-blur-md shadow-lg transition-transform active:scale-90 hover:scale-110 z-20">
+                        <i data-lucide="arrow-left" width="20" height="20"></i>
+                    </button>
+
+                    <!-- QR Content -->
+                    <div class="flex flex-col items-center justify-center h-full p-8 text-center relative z-10">
+                        
+                        <div class="relative group transition-transform hover:scale-105 duration-500">
+                            <!-- Glow -->
+                            <div id="qr-glow" class="absolute -inset-6 bg-gradient-to-tr opacity-30 blur-2xl rounded-full transition-colors duration-500"></div>
+                            
+                            <!-- QR Image Container -->
+                            <div class="relative bg-white/90 p-5 rounded-[32px] shadow-2xl backdrop-blur-sm border border-white/50">
+                                <img id="qr-image" src="" alt="QR Code" class="w-56 h-56 object-contain mix-blend-multiply opacity-90">
+                                <div class="mt-3 flex justify-center">
+                                    <div id="qr-indicator" class="h-1 w-16 rounded-full bg-gradient-to-r"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 space-y-1">
+                            <h2 id="qr-bank-name" class="text-3xl font-bold text-white tracking-tight">Bank Name</h2>
+                            <p id="qr-account-name" class="text-white/50 text-sm font-medium tracking-wide">Account Name</p>
+                        </div>
+
+                        <button id="qr-copy-btn" class="mt-10 px-8 py-4 rounded-2xl text-white font-bold tracking-wide shadow-xl shadow-black/20 flex items-center gap-2.5 hover:brightness-110 transition-transform active:scale-95 hover:scale-105">
+                            <i data-lucide="copy" width="18" height="18" stroke-width="2.5"></i>
+                            <span>Copy Account Number</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-0 left-0 w-full flex justify-center pointer-events-none z-50 p-4"></div>
+
+    <script>
+        // --- DATA ---
+        const BANK_ACCOUNTS = [
+            {
+                id: 'mb1',
+                bankName: 'MB Bank',
+                accountName: 'NGUYEN HOANG VINH',
+                accountNumber: '090695',
+                colorClass: 'from-blue-600 to-indigo-600',
+                iconName: 'credit-card',
+                qrImage: 'https://img.vietqr.io/image/MB-090695-compact.png'
+            },
+            {
+                id: 'mb2',
+                bankName: 'MB Bank',
+                accountName: 'NGUYEN HOANG VINH',
+                accountNumber: '596783',
+                colorClass: 'from-indigo-500 to-blue-500',
+                iconName: 'credit-card',
+                qrImage: 'https://img.vietqr.io/image/MB-596783-compact.png'
+            },
+            {
+                id: 'zalopay',
+                bankName: 'ZaloPay',
+                accountName: 'NGUYEN HOANG VINH',
+                accountNumber: '0397772987',
+                colorClass: 'from-blue-400 to-cyan-400',
+                iconName: 'wallet',
+                qrImage: 'https://api.vietqr.io/image/970454-99ZP25308M37546289-nxMlBda.jpg?accountName=ZALOPAY%20NGUYEN%20HOANG%20VINH&amount=0'
+            }
+        ];
+
+        // --- STATE & UTILS ---
+        const flipper = document.getElementById('card-flipper');
+        let currentActiveBank = null;
+
+        function formatCardNumber(num) {
+            // Đã xóa phần regex thêm khoảng trắng để số hiển thị liền mạch
+            return num;
+        }
+
+        // --- RENDER FUNCTION ---
+        function renderBankList() {
+            const listContainer = document.getElementById('bank-list');
+            
+            BANK_ACCOUNTS.forEach((bank, index) => {
+                const delay = 0.5 + index * 0.1;
+                const div = document.createElement('div');
+                div.className = `stagger-list-item group relative overflow-hidden rounded-[24px] bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 backdrop-blur-md cursor-pointer select-none`;
+                div.style.animationDelay = `${delay}s`;
+                
+                div.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    <div class="relative p-4 pr-3 flex items-center justify-between z-10">
+                        <div class="flex items-center gap-4 flex-1 min-w-0">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br ${bank.colorClass} shadow-lg shadow-black/20 ring-1 ring-white/20">
+                                <i data-lucide="${bank.iconName}" class="text-white w-5 h-5"></i>
+                            </div>
+                            <div class="flex-col overflow-hidden">
+                                <h3 class="text-white font-bold text-[15px] tracking-wide truncate group-hover:text-indigo-200 transition-colors">${bank.bankName}</h3>
+                                <p class="text-white/40 text-[11px] font-medium tracking-wider uppercase mb-0.5">${bank.accountName}</p>
+                                <div class="flex items-center gap-2 group/number w-fit" onclick="handleCopy('${bank.accountNumber}', '${bank.bankName}', event)">
+                                    <span class="text-indigo-300 font-mono font-semibold text-sm group-hover/number:text-white transition-colors">${formatCardNumber(bank.accountNumber)}</span>
+                                    <i data-lucide="copy" class="text-white/30 w-3 h-3 group-hover/number:text-white transition-colors"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="showQR('${bank.id}', event)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all active:scale-90 hover:rotate-90">
+                            <i data-lucide="qr-code" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        // --- INTERACTIONS ---
+        function showQR(bankId, event) {
+            if(event) event.stopPropagation();
+            const bank = BANK_ACCOUNTS.find(b => b.id === bankId);
+            if (!bank) return;
+
+            currentActiveBank = bank;
+
+            // Update DOM Elements for Back Face
+            document.getElementById('qr-image').src = bank.qrImage;
+            document.getElementById('qr-bank-name').innerText = bank.bankName;
+            document.getElementById('qr-account-name').innerText = bank.accountName;
+            
+            // Update Colors
+            const glow = document.getElementById('qr-glow');
+            const indicator = document.getElementById('qr-indicator');
+            const copyBtn = document.getElementById('qr-copy-btn');
+            
+            // Clean old classes
+            glow.className = `absolute -inset-6 bg-gradient-to-tr opacity-30 blur-2xl rounded-full transition-colors duration-500 ${bank.colorClass}`;
+            indicator.className = `h-1 w-16 rounded-full bg-gradient-to-r ${bank.colorClass}`;
+            copyBtn.className = `mt-10 px-8 py-4 rounded-2xl bg-gradient-to-r ${bank.colorClass} text-white font-bold tracking-wide shadow-xl shadow-black/20 flex items-center gap-2.5 hover:brightness-110 transition-transform active:scale-95 hover:scale-105 cursor-pointer`;
+            
+            // Bind Copy Button on Back
+            copyBtn.onclick = () => handleCopy(bank.accountNumber, bank.bankName);
+
+            // Flip
+            flipper.classList.add('rotate-y-180');
+        }
+
+        function flipBack() {
+            flipper.classList.remove('rotate-y-180');
+        }
+
+        function handleCopy(text, type, event) {
+            if(event) event.stopPropagation();
+            
+            // Fallback for iframe/sandbox restrictions
+            try {
+                // Create a temporary textarea to hold the text
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                
+                // Ensure it's not visible but part of DOM
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+                
+                textArea.focus();
+                textArea.select();
+                
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    showToast(`Đã sao chép ${type}`);
+                } else {
+                    showToast(`Không thể sao chép: ${text}`);
+                }
+            } catch (err) {
+                console.error('Fallback copy failed', err);
+            }
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            
+            // Create Toast Element
+            const toast = document.createElement('div');
+            toast.className = `toast-enter flex items-center gap-3 px-5 py-3 rounded-full bg-white/10 backdrop-blur-3xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] mb-4 pointer-events-auto`;
+            toast.innerHTML = `
+                <div class="bg-green-400/20 p-1.5 rounded-full border border-green-400/30">
+                    <i data-lucide="check-circle-2" class="text-green-400 w-3.5 h-3.5"></i>
+                </div>
+                <span class="text-white/90 text-sm font-medium font-sans tracking-wide">${message}</span>
+            `;
+
+            container.appendChild(toast);
+            lucide.createIcons(); // Refresh icons for new element
+
+            // Remove after delay
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                toast.addEventListener('animationend', () => {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderBankList();
+            lucide.createIcons();
+
+            // Welcome Toast
+            setTimeout(() => {
+                showToast('Chào mừng bạn ghé thăm!');
+            }, 1200);
+        });
+
+    </script>
 </body>
 </html>
