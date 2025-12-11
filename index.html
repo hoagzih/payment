@@ -380,6 +380,9 @@
         function showToast(message) {
             const container = document.getElementById('toast-container');
             
+            // CLEAR NGAY LẬP TỨC các thông báo cũ để tránh bị dồn
+            container.innerHTML = '';
+            
             // Create Toast Element
             const toast = document.createElement('div');
             // Thêm max-w-[90%] để đảm bảo không bị tràn trên màn hình nhỏ
@@ -396,11 +399,14 @@
 
             // Remove after delay
             setTimeout(() => {
-                toast.classList.remove('toast-enter');
-                toast.classList.add('toast-exit');
-                toast.addEventListener('animationend', () => {
-                    toast.remove();
-                });
+                // Kiểm tra xem toast này còn trong DOM không trước khi chạy animation out
+                if (toast.parentElement) {
+                    toast.classList.remove('toast-enter');
+                    toast.classList.add('toast-exit');
+                    toast.addEventListener('animationend', () => {
+                        if (toast.parentElement) toast.remove();
+                    });
+                }
             }, 3000);
         }
 
